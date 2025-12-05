@@ -14,7 +14,7 @@ export const useDashboardLayout = () => {
 
   // Convert widgets to layout format
   const layout = useMemo<Layout[]>(() => {
-    return Array.from(widgets.values())
+    return widgets
       .filter((w) => w.id)
       .map((widget) => ({
         i: widget.id!,
@@ -36,7 +36,7 @@ export const useDashboardLayout = () => {
 
       // Update widgets from layout
       newLayout.forEach((item) => {
-        const widget = widgets.get(item.i);
+        const widget = widgets.find((w) => w.id === item.i);
         if (widget) {
           dispatch(
             updateWidget({
@@ -53,7 +53,7 @@ export const useDashboardLayout = () => {
       });
 
       // Update dashboard configuration
-      const updatedWidgets = Array.from(widgets.values()).map((widget) => {
+      const updatedWidgets = widgets.map((widget) => {
         const layoutItem = newLayout.find((item) => item.i === widget.id);
         if (layoutItem) {
           return {

@@ -31,18 +31,25 @@ export function namespaceCSS(css: string, namespace: string): string {
 
   // Simple CSS namespace implementation
   // This wraps all CSS selectors with the namespace class
-  // More sophisticated parsing can be added later
   
   // Match CSS rules (selector { ... })
-  const ruleRegex = /([^{]+)\{([^}]+)\}/g;
+  // Improved regex to handle nested braces and comments
+  const ruleRegex = /([^{}@]+)\{([^{}]*(?:\{[^{}]*\}[^{}]*)*)\}/g;
   let namespacedCSS = css.replace(ruleRegex, (match, selector, rules) => {
+    const trimmedSelector = selector.trim();
+    
     // Skip @ rules (media queries, keyframes, etc.)
-    if (selector.trim().startsWith('@')) {
+    if (trimmedSelector.startsWith('@')) {
+      return match;
+    }
+    
+    // Skip empty selectors
+    if (!trimmedSelector) {
       return match;
     }
 
     // Apply namespace to selectors
-    const namespacedSelector = selector
+    const namespacedSelector = trimmedSelector
       .split(',')
       .map((sel: string) => {
         const trimmed = sel.trim();
@@ -50,11 +57,11 @@ export function namespaceCSS(css: string, namespace: string): string {
         if (trimmed.startsWith(`.${namespace}`)) {
           return trimmed;
         }
-        // Don't namespace :root, html, body at the start
-        if (trimmed.match(/^(:root|html|body)\s/)) {
-          return trimmed.replace(/^(:root|html|body)\s/, `$1 .${namespace} `);
+        // Handle :root, html, body
+        if (trimmed.match(/^(:root|html|body)(\s|$)/)) {
+          return trimmed.replace(/^(:root|html|body)(\s|$)/, `$1 .${namespace}$2`);
         }
-        // Add namespace class
+        // Add namespace class - ensure it's a descendant selector
         return `.${namespace} ${trimmed}`;
       })
       .join(', ');
@@ -69,9 +76,13 @@ export function namespaceCSS(css: string, namespace: string): string {
  * Inject namespaced CSS into the document
  */
 export function injectNamespacedCSS(css: string, namespace: string): HTMLStyleElement {
+  // Remove existing style if any
+  removeNamespacedCSS(namespace);
+  
   const namespacedCSS = namespaceCSS(css, namespace);
   const styleElement = document.createElement('style');
   styleElement.id = `widget-style-${namespace}`;
+  styleElement.setAttribute('data-widget-namespace', namespace);
   styleElement.textContent = namespacedCSS;
   document.head.appendChild(styleElement);
   return styleElement;

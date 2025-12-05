@@ -1,0 +1,258 @@
+{
+  "id": "dashboard-001",
+  "tenantId": { "id": "tenant-1" },
+  "title": "Demo Dashboard",
+  "configuration": {
+    "timewindow": {
+      "realtime": {
+        "timewindowMs": 600000
+      }
+    },
+    "entityAliases": {
+      "device1": {
+        "id": "device1",
+        "alias": "Demo Device",
+        "filter": {
+          "type": "singleEntity",
+          "singleEntity": {
+            "id": "device-1",
+            "entityType": "DEVICE"
+          }
+        }
+      }
+    },
+    "widgets": [
+      {
+        "id": "w-temperature",
+        "typeFullFqn": "demo.timeseries.temperature",
+        "type": "timeseries",
+        "sizeX": 4,
+        "sizeY": 4,
+        "row": 0,
+        "col": 0,
+        "config": {
+          "title": "Temperature",
+          "datasources": [
+            {
+              "type": "entity",
+              "name": "Device",
+              "entityAliasId": "device1",
+              "dataKeys": [
+                {
+                  "name": "temp",
+                  "type": "timeseries",
+                  "label": "Temperature"
+                }
+              ]
+            }
+          ]
+        }
+      },
+      {
+        "id": "w-hvac",
+        "typeFullFqn": "demo.latest.hvac",
+        "type": "latest",
+        "sizeX": 4,
+        "sizeY": 3,
+        "row": 0,
+        "col": 6,
+        "config": {
+          "title": "HVAC",
+          "datasources": [
+            {
+              "type": "entity",
+              "name": "Device",
+              "entityAliasId": "device1",
+              "dataKeys": [
+                {
+                  "name": "hvac",
+                  "type": "latest",
+                  "label": "HVAC"
+                }
+              ]
+            }
+          ]
+        }
+      },
+      {
+        "id": "w-value-card",
+        "typeFullFqn": "demo.cards.value-card",
+        "type": "latest",
+        "sizeX": 6,
+        "sizeY": 2.5,
+        "row": 3,
+        "col": 0,
+        "config": {
+          "title": "Energy",
+          "units": "kWh",
+          "subtitle": "Last 24h",
+          "datasources": [
+            {
+              "type": "entity",
+              "name": "Device",
+              "entityAliasId": "device1",
+              "dataKeys": [
+                {
+                  "name": "energy",
+                  "type": "latest",
+                  "label": "Energy"
+                }
+              ]
+            }
+          ]
+        }
+      },
+      {
+        "id": "w-action-button",
+        "typeFullFqn": "buttons.action_button",
+        "type": "latest",
+        "sizeX": 3,
+        "sizeY": 2,
+        "row": 6,
+        "col": 0,
+        "config": {
+          "label": "Navigate",
+          "actions": {
+            "click": [
+              {
+                "id": "action-click",
+                "name": "navigate",
+                "actionType": "openLink",
+                "url": "https://thingsboard.io",
+                "openInNewTab": true
+              }
+            ]
+          }
+        }
+      },
+      {
+        "id": "w-command-button",
+        "typeFullFqn": "buttons.command_button",
+        "type": "rpc",
+        "sizeX": 3,
+        "sizeY": 1,
+        "row": 6,
+        "col": 4,
+        "config": {
+          "label": "Send",
+          "actions": {
+            "send": [
+              {
+                "name": "sendRpc",
+                "type": "rpc",
+                "method": "setState",
+                "requestTimeout": 5000
+              }
+            ]
+          }
+        }
+      },
+      {
+        "id": "w-toggle-button",
+        "typeFullFqn": "buttons.toggle_button",
+        "type": "rpc",
+        "sizeX": 4,
+        "sizeY": 2,
+        "row": 6,
+        "col": 8,
+        "config": {
+          "label": "Toggle",
+          "settings": {
+            "initialState": false
+          },
+          "actions": {
+            "toggle": [
+              {
+                "name": "toggle",
+                "type": "rpc",
+                "method": "toggle"
+              }
+            ]
+          }
+        }
+      },
+      {
+        "id": "w-two-segment",
+        "typeFullFqn": "buttons.two_segment_button",
+        "type": "latest",
+        "sizeX": 5,
+        "sizeY": 2,
+        "row": 8,
+        "col": 0,
+        "config": {
+          "leftLabel": "Traditional",
+          "rightLabel": "Hi-Perf",
+          "actions": {
+            "leftClick": [
+              {
+                "name": "left",
+                "type": "openLink",
+                "url": "https://thingsboard.io"
+              }
+            ],
+            "rightClick": [
+              {
+                "name": "right",
+                "type": "openLink",
+                "url": "https://thingsboard.io/docs/"
+              }
+            ]
+          }
+        }
+      },
+      {
+        "id": "w-value-stepper",
+        "typeFullFqn": "buttons.value_stepper",
+        "type": "rpc",
+        "sizeX": 4,
+        "sizeY": 2,
+        "row": 8,
+        "col": 6,
+        "config": {
+          "initialValue": 0,
+          "step": 1,
+          "units": "",
+          "actions": {
+            "increment": [
+              {
+                "name": "inc",
+                "type": "rpc",
+                "method": "setState"
+              }
+            ],
+            "decrement": [
+              {
+                "name": "dec",
+                "type": "rpc",
+                "method": "setState"
+              }
+            ]
+          }
+        }
+      },
+      {
+        "id": "w-power-button",
+        "typeFullFqn": "buttons.power_button",
+        "type": "rpc",
+        "sizeX": 4,
+        "sizeY": 4,
+        "row": 8,
+        "col": 12,
+        "config": {
+          "label": "Power",
+          "initialState": false,
+          "actions": {
+            "toggle": [
+              {
+                "name": "togglePower",
+                "type": "rpc",
+                "method": "setState"
+              }
+            ]
+          }
+        }
+      }
+    ]
+  }
+}
+

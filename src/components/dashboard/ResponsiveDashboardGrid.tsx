@@ -3,6 +3,7 @@
 import React, { useCallback } from 'react';
 import { Box } from '@mui/material';
 import type { Layout, ItemCallback } from 'react-grid-layout';
+import 'react-grid-layout/css/styles.css';
 import WidgetContainer from './WidgetContainer';
 import { useResponsiveLayout } from '../../hooks/useResponsiveLayout';
 import type { Widget } from '../../types/dashboard.types';
@@ -58,8 +59,8 @@ const ResponsiveDashboardGrid: React.FC<ResponsiveDashboardGridProps> = ({
         layouts={layouts}
         breakpoints={breakpoints}
         cols={cols}
-        rowHeight={50}
-        margin={[10, 10]}
+        rowHeight={40}
+        margin={[8, 8]}
         containerPadding={[0, 0]}
         isDraggable={isEdit}
         isResizable={isEdit}

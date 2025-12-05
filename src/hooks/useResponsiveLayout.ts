@@ -45,10 +45,11 @@ export const useResponsiveLayout = ({
         i: widget.id!,
         x: widget.col || 0,
         y: widget.row || 0,
-        w: widget.sizeX || 8,
-        h: widget.sizeY || 6,
-        minW: 2,
-        minH: 2,
+        // default footprint from config, but allow shrinking down to 1x1
+        w: Math.max(1, Math.round(widget.sizeX || 8)),
+        h: Math.max(1, Math.round(widget.sizeY || 6)),
+        minW: 1,
+        minH: 1,
         isResizable: isEdit,
         isDraggable: isEdit,
       }));

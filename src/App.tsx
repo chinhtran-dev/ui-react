@@ -9,10 +9,7 @@ import CssBaseline from '@mui/material/CssBaseline';
 import { CircularProgress, Box } from '@mui/material';
 import { queryClient } from './services/api/react-query.config';
 import { store } from './store/store';
-import { useCurrentUser } from './hooks/useAuth';
-import ProtectedRoute from './components/auth/ProtectedRoute';
 import MainLayout from './components/layout/MainLayout';
-import LoginPage from './components/auth/LoginPage';
 
 // Lazy load pages for code splitting
 const DashboardPage = lazy(() => import('./pages/DashboardPage'));
@@ -43,48 +40,45 @@ const theme = createTheme({
   },
 });
 
-const AppContent: React.FC = () => {
-  useCurrentUser();
-
-  return (
-    <Routes>
-      <Route path="/login" element={<LoginPage />} />
+const AppContent: React.FC = () => (
+  <Routes>
+    <Route element={<MainLayout />}>
       <Route
+        path="/dashboard"
         element={
-          <ProtectedRoute>
-            <MainLayout />
-          </ProtectedRoute>
+          <Suspense fallback={<PageLoader />}>
+            <DashboardPage />
+          </Suspense>
         }
-      >
-        <Route
-          path="/dashboard"
-          element={
-            <Suspense fallback={<PageLoader />}>
-              <DashboardPage />
-            </Suspense>
-          }
-        />
-        <Route
-          path="/widget-bundles"
-          element={
-            <Suspense fallback={<PageLoader />}>
-              <WidgetBundlesPage />
-            </Suspense>
-          }
-        />
-        <Route
-          path="/widget-bundles/:id"
-          element={
-            <Suspense fallback={<PageLoader />}>
-              <WidgetBundleDetailPage />
-            </Suspense>
-          }
-        />
-        <Route path="/" element={<Navigate to="/dashboard" replace />} />
-      </Route>
-    </Routes>
-  );
-};
+      />
+      <Route
+        path="/dashboard/:id"
+        element={
+          <Suspense fallback={<PageLoader />}>
+            <DashboardPage />
+          </Suspense>
+        }
+      />
+      <Route
+        path="/widget-bundles"
+        element={
+          <Suspense fallback={<PageLoader />}>
+            <WidgetBundlesPage />
+          </Suspense>
+        }
+      />
+      <Route
+        path="/widget-bundles/:id"
+        element={
+          <Suspense fallback={<PageLoader />}>
+            <WidgetBundleDetailPage />
+          </Suspense>
+        }
+      />
+      <Route path="/" element={<Navigate to="/dashboard" replace />} />
+    </Route>
+  </Routes>
+);
 
 const App: React.FC = () => {
   return (

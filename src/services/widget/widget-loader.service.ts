@@ -47,6 +47,10 @@ class WidgetLoaderService {
   createWidgetInfo(widgetType: WidgetType): WidgetInfo {
     const descriptor = widgetType.descriptor;
     
+    if (!descriptor) {
+      throw new Error(`Widget type ${widgetType.fqn} has no descriptor`);
+    }
+    
     return {
       widgetType,
       fullFqn: widgetType.fqn,
@@ -55,7 +59,7 @@ class WidgetLoaderService {
       templateCss: descriptor.templateCss || '',
       controllerScript: typeof descriptor.controllerScript === 'string'
         ? descriptor.controllerScript
-        : descriptor.controllerScript.body || '',
+        : descriptor.controllerScript?.body || '',
       resources: descriptor.resources || [],
       defaultConfig: descriptor.defaultConfig || '{}',
       sizeX: descriptor.sizeX || 8,

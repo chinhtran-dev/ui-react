@@ -1,6 +1,7 @@
 // Widget Component - Main widget rendering component
 
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useMemo, useRef } from 'react';
+import parse from 'html-react-parser';
 import { Box, CircularProgress, Alert } from '@mui/material';
 import { WidgetContextProvider, useWidgetContext } from '../../contexts/WidgetContext';
 import { useWidgetInstance } from '../../hooks/useWidgetInstance';
@@ -22,7 +23,7 @@ interface WidgetProps {
 const WidgetContent: React.FC = () => {
   const context = useWidgetContext();
   const contentRef = useRef<HTMLDivElement>(null);
-  const { controller, isLoading, error, templateHtml, templateCss } = useWidgetInstance({
+  const { controller, isLoading, error, templateHtml, templateCss, renderVersion } = useWidgetInstance({
     widget: context.widget,
     context,
   });
@@ -54,18 +55,23 @@ const WidgetContent: React.FC = () => {
     }
   }, [templateCss, context.widgetNamespace]);
 
-  // Render HTML template
-  useEffect(() => {
-    if (contentRef.current && templateHtml && controller) {
-      // Set namespace class on container
-      if (context.widgetNamespace) {
-        contentRef.current.className = context.widgetNamespace;
-      }
-      
-      // Render HTML (be careful with XSS)
-      contentRef.current.innerHTML = templateHtml;
+  const interpolateTemplate = (html: string, ctrl: any): string => {
+    if (!html || !ctrl) return html;
+    return html.replace(/{{\s*([^{}]+)\s*}}/g, (_match, p1) => {
+      const key = p1.trim();
+      const val = ctrl[key];
+      return val !== undefined && val !== null ? String(val) : '';
+    });
+  };
+
+  // Parse HTML template into React elements
+  const parsedTemplate = useMemo(() => {
+    if (!templateHtml || !controller) {
+      return null;
     }
-  }, [templateHtml, controller, context.widgetNamespace]);
+    const interpolated = interpolateTemplate(templateHtml, controller);
+    return parse(interpolated);
+  }, [templateHtml, controller, renderVersion]);
 
   if (isLoading) {
     return (
@@ -86,12 +92,15 @@ const WidgetContent: React.FC = () => {
   return (
     <Box
       ref={contentRef}
+      className={context.widgetNamespace}
       sx={{
         width: '100%',
         height: '100%',
         overflow: 'auto',
       }}
-    />
+    >
+      {parsedTemplate}
+    </Box>
   );
 };
 

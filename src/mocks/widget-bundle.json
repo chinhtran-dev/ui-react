@@ -1,0 +1,20 @@
+{
+  "id": "widgets-bundle-001",
+  "tenantId": { "id": "tenant-1" },
+  "alias": "demo_bundle",
+  "title": "Demo Widgets Bundle",
+  "description": "Mock bundle with demo widgets for local development",
+  "scada": false,
+  "widgetTypeIds": [
+    "widget-type-001",
+    "widget-type-002",
+    "widget-type-003",
+    "widget-type-004",
+    "widget-type-005",
+    "widget-type-006",
+    "widget-type-007",
+    "widget-type-008",
+    "widget-type-009"
+  ]
+}
+

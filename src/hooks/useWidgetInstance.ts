@@ -15,9 +15,10 @@ export const useWidgetInstance = ({ widget, context }: UseWidgetInstanceOptions)
   const [controller, setController] = useState<WidgetController | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<Error | null>(null);
+  const [renderVersion, setRenderVersion] = useState(0);
   const controllerRef = useRef<WidgetController | null>(null);
 
-  const { data: widgetType } = useWidgetType(widget.typeFullFqn);
+  const { data: widgetType, isLoading: isWidgetTypeLoading, error: widgetTypeError } = useWidgetType(widget.typeFullFqn);
 
   useEffect(() => {
     if (!widgetType) {
@@ -47,12 +48,17 @@ export const useWidgetInstance = ({ widget, context }: UseWidgetInstanceOptions)
 
         // Create controller instance - compiledController is already an instance
         const instance = compiledController;
+        
+        // Assign context to controller instance (controller scripts use ctx)
+        (instance as any).ctx = context;
+        
         controllerRef.current = instance;
         setController(instance);
 
         // Call onInit
         if (instance.onInit) {
           instance.onInit();
+          setRenderVersion((v) => v + 1);
         }
       } catch (err) {
         console.error('Failed to load widget:', err);
@@ -81,6 +87,7 @@ export const useWidgetInstance = ({ widget, context }: UseWidgetInstanceOptions)
     if (controller && context.data) {
       if (controller.onDataUpdated) {
         controller.onDataUpdated();
+        setRenderVersion((v) => v + 1);
       }
     }
   }, [controller, context.data]);
@@ -90,6 +97,7 @@ export const useWidgetInstance = ({ widget, context }: UseWidgetInstanceOptions)
     if (controller && context.latestData) {
       if (controller.onLatestDataUpdated) {
         controller.onLatestDataUpdated();
+        setRenderVersion((v) => v + 1);
       }
     }
   }, [controller, context.latestData]);
@@ -123,10 +131,11 @@ export const useWidgetInstance = ({ widget, context }: UseWidgetInstanceOptions)
 
   return {
     controller,
-    isLoading,
-    error,
-    templateHtml: widgetType?.descriptor.templateHtml || '',
-    templateCss: widgetType?.descriptor.templateCss || '',
+    isLoading: isLoading || isWidgetTypeLoading,
+    error: error || (widgetTypeError ? new Error(`Failed to load widget type: ${widgetTypeError}`) : null),
+    templateHtml: widgetType?.descriptor?.templateHtml || '',
+    templateCss: widgetType?.descriptor?.templateCss || '',
+    renderVersion,
   };
 };
 

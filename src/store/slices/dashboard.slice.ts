@@ -7,7 +7,7 @@ import type { Dashboard, DashboardConfiguration, Widget, WidgetLayouts } from '.
 interface DashboardState {
   currentDashboard: Dashboard | null;
   dashboardConfiguration: DashboardConfiguration | null;
-  widgets: Map<string, Widget>;
+  widgets: Widget[];
   widgetLayouts: WidgetLayouts;
   isEdit: boolean;
   isEditingWidget: boolean;
@@ -18,7 +18,7 @@ interface DashboardState {
 const initialState: DashboardState = {
   currentDashboard: null,
   dashboardConfiguration: null,
-  widgets: new Map(),
+  widgets: [],
   widgetLayouts: {},
   isEdit: false,
   isEditingWidget: false,
@@ -33,12 +33,12 @@ const dashboardSlice = createSlice({
     setDashboard: (state, action: PayloadAction<Dashboard>) => {
       state.currentDashboard = action.payload;
       state.dashboardConfiguration = action.payload.configuration || {};
-      // Convert widgets array to Map if needed
+      // Convert widgets array or object to plain array
       if (action.payload.configuration?.widgets) {
         const widgets = Array.isArray(action.payload.configuration.widgets)
           ? action.payload.configuration.widgets
           : Object.values(action.payload.configuration.widgets);
-        state.widgets = new Map(widgets.map((w) => [w.id || '', w]));
+        state.widgets = widgets;
       }
       // WidgetLayouts should be from configuration, not states
       // For now, initialize as empty object
@@ -50,18 +50,18 @@ const dashboardSlice = createSlice({
     addWidget: (state, action: PayloadAction<Widget>) => {
       const widget = action.payload;
       if (widget.id) {
-        state.widgets.set(widget.id, widget);
+        state.widgets.push(widget);
       }
     },
     updateWidget: (state, action: PayloadAction<{ id: string; updates: Partial<Widget> }>) => {
       const { id, updates } = action.payload;
-      const widget = state.widgets.get(id);
-      if (widget) {
-        state.widgets.set(id, { ...widget, ...updates });
+      const idx = state.widgets.findIndex((w) => w.id === id);
+      if (idx > -1) {
+        state.widgets[idx] = { ...state.widgets[idx], ...updates };
       }
     },
     removeWidget: (state, action: PayloadAction<string>) => {
-      state.widgets.delete(action.payload);
+      state.widgets = state.widgets.filter((w) => w.id !== action.payload);
       if (state.selectedWidgetId === action.payload) {
         state.selectedWidgetId = null;
       }

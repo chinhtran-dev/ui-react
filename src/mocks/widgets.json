@@ -1,0 +1,183 @@
+[
+  {
+    "id": "widget-type-001",
+    "tenantId": { "id": "tenant-1" },
+    "fqn": "demo.timeseries.temperature",
+    "name": "Temperature Timeseries",
+    "descriptor": {
+      "type": "timeseries",
+      "resources": [],
+      "templateHtml": "<div class=\"tb-card temp-card\"><div class=\"header\"><div class=\"icon\">🌡️</div><div class=\"title\">{{title}}</div></div><div class=\"value\" data-action-id=\"openDetails\">{{value}} °C</div><div class=\"footer\">Updated from datasource</div></div>",
+      "templateCss": ".tb-card{height:100%;box-sizing:border-box;} .temp-card{display:flex;flex-direction:column;gap:12px;padding:14px;border-radius:12px;background:linear-gradient(135deg,#f5f7fa,#c3cfe2);color:#1c1c1c;box-shadow:0 4px 12px rgba(0,0,0,0.08);} .temp-card .header{display:flex;align-items:center;gap:10px;font-weight:700;font-size:16px;} .temp-card .icon{font-size:20px;} .temp-card .title{font-size:16px;} .temp-card .value{font-size:30px;font-weight:800;letter-spacing:0.5px;} .temp-card .footer{font-size:12px;opacity:0.75;}",
+      "controllerScript": "self.title = ctx.settings.title || 'Temperature'; self.value = ctx.data?.[0]?.[0]?.value ?? '--'; self.onInit = function(){ if(ctx.actionsApi && ctx.actionsApi.openDetails){ ctx.actionsApi.openDetails(); } }; self.onDataUpdated = function(){ self.value = ctx.data?.[0]?.[0]?.value ?? '--'; };",
+      "defaultConfig": "{\"title\":\"Temperature\",\"datasources\":[{\"type\":\"entity\",\"name\":\"Device\",\"entityAliasId\":\"device1\",\"dataKeys\":[{\"name\":\"temp\",\"type\":\"timeseries\",\"label\":\"Temperature\"}]}]}",
+      "sizeX": 6,
+      "sizeY": 2
+    },
+    "deprecated": false,
+    "scada": false,
+    "description": "Mock timeseries widget for temperature"
+  },
+  {
+    "id": "widget-type-002",
+    "tenantId": { "id": "tenant-1" },
+    "fqn": "demo.latest.hvac",
+    "name": "HVAC Status",
+    "descriptor": {
+      "type": "latest",
+      "resources": [],
+      "templateHtml": "<div class=\"tb-card hvac-card\"><div class=\"header\"><div class=\"dot\" data-status=\"{{status}}\"></div><div class=\"label\">HVAC</div></div><div class=\"value\">{{status}}</div><button class=\"tb-btn\" data-action-id=\"toggleHvac\">Toggle</button></div>",
+      "templateCss": ".tb-card{height:100%;box-sizing:border-box;} .hvac-card{display:flex;flex-direction:column;gap:10px;padding:14px;border-radius:12px;background:#fff;border:1px solid #e0e0e0;box-shadow:0 4px 12px rgba(0,0,0,0.05);} .hvac-card .header{display:flex;align-items:center;gap:8px;} .hvac-card .dot{width:10px;height:10px;border-radius:50%;background:#9e9e9e;} .hvac-card .dot[data-status='ON']{background:#4caf50;} .hvac-card .dot[data-status='OFF']{background:#f44336;} .hvac-card .label{font-size:14px;color:#444;font-weight:600;} .hvac-card .value{font-size:26px;font-weight:700;} .hvac-card .tb-btn{align-self:flex-start;padding:8px 14px;border:none;border-radius:8px;background:#546e7a;color:#fff;font-weight:600;font-size:13px;cursor:pointer;box-shadow:0 3px 8px rgba(0,0,0,0.12);} .hvac-card .tb-btn:hover{background:#607d8b;} .hvac-card .tb-btn:active{transform:translateY(1px);}",
+      "controllerScript": "self.status = 'OFF'; self.onInit = function(){ self.status = ctx.latestData?.[0]?.[0]?.value ? 'ON' : 'OFF'; }; self.onLatestDataUpdated = function(){ self.status = ctx.latestData?.[0]?.[0]?.value ? 'ON' : 'OFF'; }; self.toggleHvac = function(){ if(ctx.actionsApi && ctx.actionsApi.toggleHvac){ ctx.actionsApi.toggleHvac(); } };",
+      "defaultConfig": "{\"title\":\"HVAC\",\"datasources\":[{\"type\":\"entity\",\"name\":\"Device\",\"entityAliasId\":\"device1\",\"dataKeys\":[{\"name\":\"hvac\",\"type\":\"latest\",\"label\":\"HVAC\"}]}]}",
+      "sizeX": 4,
+      "sizeY": 3
+    },
+    "deprecated": false,
+    "scada": false,
+    "description": "Mock latest values widget for HVAC state"
+  },
+  {
+    "id": "widget-type-003",
+    "tenantId": { "id": "tenant-1" },
+    "fqn": "demo.cards.value-card",
+    "name": "Value Card",
+    "descriptor": {
+      "type": "latest",
+      "resources": [],
+      "templateHtml": "<div class=\"tb-card value-card\"><div class=\"title\">{{title}}</div><div class=\"value\">{{value}} {{units}}</div><div class=\"sub\">{{subtitle}}</div></div>",
+      "templateCss": ".value-card{display:flex;flex-direction:column;gap:6px;background:linear-gradient(135deg,#3f51b5,#1e88e5);color:#fff;border-radius:12px;padding:16px;box-shadow:0 4px 12px rgba(0,0,0,0.15);} .value-card .title{font-size:14px;font-weight:600;opacity:0.9;text-transform:uppercase;letter-spacing:0.5px;} .value-card .value{font-size:28px;font-weight:700;} .value-card .sub{font-size:12px;opacity:0.85;}",
+      "controllerScript": "self.title = ctx.settings.title || 'Energy'; self.value = ctx.latestData?.[0]?.[0]?.value ?? 0; self.units = ctx.settings.units || 'kWh'; self.subtitle = ctx.settings.subtitle || 'Last 24h'; self.onLatestDataUpdated = function(){ self.value = ctx.latestData?.[0]?.[0]?.value ?? 0; };",
+      "defaultConfig": "{\"title\":\"Energy\",\"units\":\"kWh\",\"subtitle\":\"Last 24h\",\"datasources\":[{\"type\":\"entity\",\"name\":\"Device\",\"entityAliasId\":\"device1\",\"dataKeys\":[{\"name\":\"energy\",\"type\":\"latest\",\"label\":\"Energy\"}]}]}",
+      "sizeX": 6,
+      "sizeY": 3
+    },
+    "deprecated": false,
+    "scada": false,
+    "description": "Seed-style value card widget"
+  },
+  {
+    "id": "widget-type-004",
+    "tenantId": { "id": "tenant-1" },
+    "fqn": "buttons.action_button",
+    "name": "Action button",
+    "descriptor": {
+      "type": "latest",
+      "sizeX": 3,
+      "sizeY": 1,
+      "resources": [],
+      "templateHtml": "<div class=\"tb-card btn-card\"><button class=\"tb-btn\" data-action-id=\"click\">{{label}}</button></div>",
+      "templateCss": ".btn-card{display:flex;justify-content:center;align-items:center;height:100%;} .tb-btn{padding:10px 16px;border:none;border-radius:8px;background:#00695c;color:#fff;font-weight:600;font-size:14px;cursor:pointer;box-shadow:0 3px 8px rgba(0,0,0,0.15);} .tb-btn:hover{background:#00897b;} .tb-btn:active{transform:translateY(1px);}",
+      "controllerScript": "self.label = ctx.settings.label || 'Action'; self.onInit = function() { /* ready */ };",
+      "defaultConfig": "{\"label\":\"Action\",\"datasources\":[],\"actions\":{\"click\":[{\"name\":\"openLink\",\"type\":\"openLink\",\"url\":\"https://thingsboard.io\",\"openInNewTab\":true}]}}"
+    },
+    "deprecated": false,
+    "scada": false,
+    "description": "Mock of ThingsBoard action button (buttons bundle)"
+  },
+  {
+    "id": "widget-type-005",
+    "tenantId": { "id": "tenant-1" },
+    "fqn": "buttons.command_button",
+    "name": "Command button",
+    "descriptor": {
+      "type": "rpc",
+      "sizeX": 3,
+      "sizeY": 1,
+      "resources": [],
+      "templateHtml": "<div class=\"tb-card btn-card\"><button class=\"tb-btn\" data-action-id=\"send\">{{label}}</button></div>",
+      "templateCss": ".btn-card{display:flex;justify-content:center;align-items:center;height:100%;} .tb-btn{padding:10px 16px;border:none;border-radius:8px;background:#3949ab;color:#fff;font-weight:600;font-size:14px;cursor:pointer;box-shadow:0 3px 8px rgba(0,0,0,0.15);} .tb-btn:hover{background:#5c6bc0;} .tb-btn:active{transform:translateY(1px);}",
+      "controllerScript": "self.label = ctx.settings.label || 'Send'; self.send = function(){ if(ctx.actionsApi && ctx.actionsApi.send){ ctx.actionsApi.send(); } };",
+      "defaultConfig": "{\"label\":\"Send\",\"datasources\":[],\"actions\":{\"send\":[{\"name\":\"sendRpc\",\"type\":\"rpc\",\"method\":\"setState\",\"requestTimeout\":5000}]}}"
+    },
+    "deprecated": false,
+    "scada": false,
+    "description": "Mock of ThingsBoard command button (buttons bundle)"
+  },
+  {
+    "id": "widget-type-006",
+    "tenantId": { "id": "tenant-1" },
+    "fqn": "buttons.toggle_button",
+    "name": "Toggle button",
+    "descriptor": {
+      "type": "rpc",
+      "sizeX": 4,
+      "sizeY": 2,
+      "resources": [],
+      "templateHtml": "<div class=\"tb-card toggle-card\"><div class=\"label\">{{label}}</div><button class=\"tb-btn\" data-action-id=\"toggle\">{{state}}</button></div>",
+      "templateCss": ".toggle-card{display:flex;flex-direction:column;gap:10px;align-items:flex-start;justify-content:center;height:100%;padding:12px;border:1px solid #e0e0e0;border-radius:8px;} .tb-btn{padding:10px 16px;border:none;border-radius:8px;background:#546e7a;color:#fff;font-weight:600;font-size:14px;cursor:pointer;box-shadow:0 3px 8px rgba(0,0,0,0.15);} .tb-btn:hover{background:#607d8b;} .tb-btn:active{transform:translateY(1px);}",
+      "controllerScript": "self.label = ctx.settings.label || 'Toggle'; self.state = ctx.settings.initialState ? 'ON' : 'OFF'; self.toggle = function(){ self.state = self.state === 'ON' ? 'OFF' : 'ON'; if(ctx.actionsApi && ctx.actionsApi.toggle){ ctx.actionsApi.toggle(self.state); } };",
+      "defaultConfig": "{\"label\":\"Toggle\",\"datasources\":[],\"settings\":{\"initialState\":false},\"actions\":{\"toggle\":[{\"name\":\"toggle\",\"type\":\"rpc\",\"method\":\"toggle\"}]}}"
+    },
+    "deprecated": false,
+    "scada": false,
+    "description": "Mock of ThingsBoard toggle button (buttons bundle)"
+  },
+  {
+    "id": "widget-type-007",
+    "tenantId": { "id": "tenant-1" },
+    "fqn": "buttons.two_segment_button",
+    "name": "Two-segment button",
+    "descriptor": {
+      "type": "latest",
+      "sizeX": 5,
+      "sizeY": 1.5,
+      "resources": [],
+      "templateHtml": "<div class=\"tb-card segment-card\"><button class=\"tb-btn left\" data-action-id=\"leftClick\">{{leftLabel}}</button><button class=\"tb-btn right\" data-action-id=\"rightClick\">{{rightLabel}}</button></div>",
+      "templateCss": ".segment-card{display:flex;gap:10px;align-items:center;justify-content:center;height:100%;padding:8px;border:1px solid #e0e0e0;border-radius:10px;} .tb-btn{padding:10px 14px;border:none;border-radius:10px;font-weight:600;font-size:14px;cursor:pointer;box-shadow:0 3px 8px rgba(0,0,0,0.12);} .tb-btn.left{background:#00695c;color:#fff;} .tb-btn.left:hover{background:#00897b;} .tb-btn.right{background:#e0e0e0;color:#263238;} .tb-btn.right:hover{background:#d5d5d5;}",
+      "controllerScript": "self.leftLabel = ctx.settings.leftLabel || 'Left'; self.rightLabel = ctx.settings.rightLabel || 'Right'; self.leftClick = function(){ if(ctx.actionsApi && ctx.actionsApi.leftClick){ ctx.actionsApi.leftClick(); } }; self.rightClick = function(){ if(ctx.actionsApi && ctx.actionsApi.rightClick){ ctx.actionsApi.rightClick(); } };",
+      "defaultConfig": "{\"leftLabel\":\"Traditional\",\"rightLabel\":\"Hi-Perf\",\"datasources\":[],\"actions\":{\"leftClick\":[{\"name\":\"left\",\"type\":\"openLink\",\"url\":\"https://thingsboard.io\"}],\"rightClick\":[{\"name\":\"right\",\"type\":\"openLink\",\"url\":\"https://thingsboard.io/docs/\"}]}}"
+    },
+    "deprecated": false,
+    "scada": false,
+    "description": "Mock of ThingsBoard two-segment button (buttons bundle)"
+  },
+  {
+    "id": "widget-type-008",
+    "tenantId": { "id": "tenant-1" },
+    "fqn": "buttons.value_stepper",
+    "name": "Value stepper",
+    "descriptor": {
+      "type": "rpc",
+      "sizeX": 3.5,
+      "sizeY": 2,
+      "resources": [],
+      "templateHtml": "<div class=\"tb-card stepper-card\"><div class=\"value\">{{value}} {{units}}</div><div class=\"actions\"><button class=\"tb-btn\" data-action-id=\"decrement\">-</button><button class=\"tb-btn\" data-action-id=\"increment\">+</button></div></div>",
+      "templateCss": ".stepper-card{display:flex;flex-direction:column;gap:12px;justify-content:center;align-items:center;height:100%;padding:12px;border:1px solid #e0e0e0;border-radius:10px;} .value{font-size:22px;font-weight:700;} .actions{display:flex;gap:10px;} .tb-btn{width:44px;height:36px;border:none;border-radius:8px;background:#00695c;color:#fff;font-weight:700;font-size:18px;cursor:pointer;box-shadow:0 3px 8px rgba(0,0,0,0.12);} .tb-btn:hover{background:#00897b;} .tb-btn:active{transform:translateY(1px);}",
+      "controllerScript": "self.units = ctx.settings.units || ''; self.value = ctx.settings.initialValue ?? 0; self.increment = function(){ self.value = (self.value || 0) + (ctx.settings.step || 1); if(ctx.actionsApi && ctx.actionsApi.increment){ ctx.actionsApi.increment(self.value); } }; self.decrement = function(){ self.value = (self.value || 0) - (ctx.settings.step || 1); if(ctx.actionsApi && ctx.actionsApi.decrement){ ctx.actionsApi.decrement(self.value); } };",
+      "dataKeySettingsForm": [],
+      "settingsDirective": "",
+      "hasBasicMode": true,
+      "basicModeDirective": "",
+      "defaultConfig": "{\"initialValue\":0,\"step\":1,\"units\":\"\",\"datasources\":[],\"actions\":{\"increment\":[{\"name\":\"inc\",\"type\":\"rpc\",\"method\":\"setState\"}],\"decrement\":[{\"name\":\"dec\",\"type\":\"rpc\",\"method\":\"setState\"}]}}"
+    },
+    "deprecated": false,
+    "scada": false,
+    "description": "Mock of ThingsBoard value stepper (buttons bundle)"
+  },
+  {
+    "id": "widget-type-009",
+    "tenantId": { "id": "tenant-1" },
+    "fqn": "buttons.power_button",
+    "name": "Power button",
+    "descriptor": {
+      "type": "rpc",
+      "sizeX": 3.5,
+      "sizeY": 3.5,
+      "resources": [],
+      "templateHtml": "<div class=\"tb-card power-card\"><button class=\"power-btn\" data-action-id=\"toggle\">{{state}}</button><div class=\"label\">{{label}}</div></div>",
+      "templateCss": ".power-card{display:flex;flex-direction:column;gap:12px;align-items:center;justify-content:center;height:100%;padding:12px;border:1px solid #e0e0e0;border-radius:12px;} .power-btn{width:120px;height:120px;border:none;border-radius:60px;background:linear-gradient(135deg,#ff7043,#f44336);color:#fff;font-size:20px;font-weight:700;cursor:pointer;box-shadow:0 6px 14px rgba(0,0,0,0.2);} .power-btn:hover{background:linear-gradient(135deg,#ff8a65,#ef5350);} .label{font-size:14px;color:#555;font-weight:600;}",
+      "controllerScript": "self.label = ctx.settings.label || 'Power'; self.state = ctx.settings.initialState ? 'ON' : 'OFF'; self.toggle = function(){ self.state = self.state === 'ON' ? 'OFF' : 'ON'; if(ctx.actionsApi && ctx.actionsApi.toggle){ ctx.actionsApi.toggle(self.state); } };",
+      "settingsSchema": "",
+      "dataKeySettingsSchema": "{}\n",
+      "settingsDirective": "",
+      "hasBasicMode": true,
+      "basicModeDirective": "",
+      "defaultConfig": "{\"label\":\"Power\",\"initialState\":false,\"datasources\":[],\"actions\":{\"toggle\":[{\"name\":\"togglePower\",\"type\":\"rpc\",\"method\":\"setState\"}]}}"
+    },
+    "deprecated": false,
+    "scada": false,
+    "description": "Mock of ThingsBoard power button (buttons bundle)"
+  }
+]
+

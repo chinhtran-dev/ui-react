@@ -50,6 +50,8 @@ export const WidgetContextProvider: React.FC<WidgetContextProviderProps> = ({
     subscriptionApi: widgetSubscriptionService.createSubscriptionApi(),
     actionsApi,
     datasources: widget.config.datasources || [],
+    data: [], // Will be updated by subscription
+    latestData: [], // Will be updated by subscription
     utils: {
       formatValue: (value: any, units?: string, decimals?: number) => {
         if (value === null || value === undefined) return '-';
